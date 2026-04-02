@@ -1,0 +1,7 @@
+*.py
+.DS_Store
+Thumbs.db
+gh-auth-check.js
+rebrand.py
+update_colors.py
+final_color_cleanup.py

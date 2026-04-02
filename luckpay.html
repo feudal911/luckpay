@@ -1,0 +1,2653 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LuckPay — A sorte favorece quem opera melhor!</title>
+  <link rel="icon" type="image/png" href="luckpay-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --lime: #A4F400;
+      --lime-light: #C8FF5A;
+      --lime-pale: #F1FFD6;
+      --mint: #F7FFE9;
+      --mint-mid: #E9FFC2;
+      --green: #2E7D32;
+      --green-deep: #174D1B;
+      --green-mid: #43A047;
+      --white: #FFFFFF;
+      --text-dark: #0F1A0F;
+      --text-green: #1B5E20;
+      --text-muted: #5F7A60;
+      --text-gray: #8A9B8B;
+      --border: rgba(164, 244, 0, 0.18);
+      --font: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--mint);
+      color: var(--text-dark);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
+
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 24px
+    }
+
+    /* ── NAVBAR ── */
+    #navbar {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      width: calc(100% - 48px);
+      max-width: 1040px;
+      transition: all .4s ease
+    }
+
+    .nav-inner {
+      background: rgba(255, 255, 255, .85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 4px 24px rgba(23, 77, 27, .06);
+      transition: all .3s
+    }
+
+    #navbar.scrolled .nav-inner {
+      background: rgba(253, 243, 248, .95);
+      box-shadow: 0 8px 40px rgba(23, 77, 27, .12)
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      flex-shrink: 0
+    }
+
+    .nav-logo-img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain
+    }
+
+    .nav-logo-text {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -.02em
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      list-style: none
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 6px 13px;
+      border-radius: 999px;
+      transition: color .2s, background .2s
+    }
+
+    .nav-links a:hover {
+      color: var(--lime);
+      background: var(--lime-pale)
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0
+    }
+
+    .btn-luck {
+      font-family: var(--font);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-dark);
+      background: transparent;
+      border: 1.5px solid rgba(23, 77, 27, .15);
+      border-radius: 999px;
+      padding: 7px 18px;
+      cursor: pointer;
+      transition: all .2s
+    }
+
+    .btn-luck:hover {
+      border-color: var(--lime);
+      color: var(--lime);
+      background: var(--lime-pale)
+    }
+
+    .btn-primary {
+      font-family: var(--font);
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--green);
+      border: none;
+      border-radius: 999px;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: all .25s;
+      box-shadow: 0 4px 16px rgba(23, 77, 27, .3);
+      position: relative;
+      overflow: hidden
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--lime), var(--green));
+      opacity: 0;
+      transition: opacity .25s
+    }
+
+    .btn-primary:hover::after {
+      opacity: 1
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 24px rgba(164, 244, 0, .4);
+      transform: translateY(-1px)
+    }
+
+    .btn-primary span {
+      position: relative;
+      z-index: 1
+    }
+
+    .nav-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      flex-direction: column;
+      gap: 5px
+    }
+
+    .nav-hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text-dark);
+      border-radius: 2px;
+      transition: all .3s
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 60px;
+      position: relative;
+      overflow: hidden;
+      background: var(--mint)
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden
+    }
+
+    .hero-bg svg {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 840px
+    }
+
+    .social-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      padding: 7px 16px 7px 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--green);
+      margin-bottom: 28px;
+      box-shadow: 0 4px 16px rgba(23, 77, 27, .06);
+      opacity: 0;
+      animation: fadeUp .8s .1s forwards
+    }
+
+    .pill-avatars {
+      display: flex
+    }
+
+    .pill-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      margin-right: -6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff
+    }
+
+    .hero-h1 {
+      font-size: clamp(38px, 7vw, 76px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -.04em;
+      color: var(--green-deep);
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp .9s .25s forwards
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 19px);
+      font-weight: 400;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 460px;
+      margin: 0 auto 36px;
+      opacity: 0;
+      animation: fadeUp .9s .4s forwards
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp .9s .55s forwards
+    }
+
+    .btn-hero-p {
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--green);
+      border: none;
+      border-radius: 999px;
+      padding: 14px 32px;
+      cursor: pointer;
+      transition: all .25s;
+      box-shadow: 0 6px 24px rgba(23, 77, 27, .3);
+      position: relative;
+      overflow: hidden
+    }
+
+    .btn-hero-p::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--lime), var(--green));
+      opacity: 0;
+      transition: opacity .25s
+    }
+
+    .btn-hero-p:hover::after {
+      opacity: 1
+    }
+
+    .btn-hero-p:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(164, 244, 0, .4)
+    }
+
+    .btn-hero-p span {
+      position: relative;
+      z-index: 1
+    }
+
+    .btn-hero-g {
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--green);
+      background: transparent;
+      border: 1.5px solid rgba(23, 77, 27, .2);
+      border-radius: 999px;
+      padding: 14px 32px;
+      cursor: pointer;
+      transition: all .2s
+    }
+
+    .btn-hero-g:hover {
+      background: var(--lime-pale);
+      border-color: var(--lime);
+      color: var(--lime)
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 48px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp .9s .7s forwards
+    }
+
+    .hero-badge {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--green-deep);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 12px rgba(23, 77, 27, .05)
+    }
+
+    .hero-badge-icon {
+      width: 8px;
+      height: 8px;
+      background: var(--lime);
+      border-radius: 50%
+    }
+
+    /* ── TICKER ── */
+    .ticker-wrap {
+      background: #fff;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+      overflow: hidden;
+      position: relative;
+      opacity: 0;
+      animation: fadeIn 1s 1s forwards
+    }
+
+    .ticker-wrap::before,
+    .ticker-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 80px;
+      z-index: 2;
+      pointer-events: none
+    }
+
+    .ticker-wrap::before {
+      left: 0;
+      background: linear-gradient(90deg, #fff, transparent)
+    }
+
+    .ticker-wrap::after {
+      right: 0;
+      background: linear-gradient(-90deg, #fff, transparent)
+    }
+
+    .ticker-track {
+      display: flex;
+      gap: 0;
+      width: max-content;
+      animation: ticker 18s linear infinite
+    }
+
+    .ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 40px;
+      white-space: nowrap;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-dark)
+    }
+
+    .ticker-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--lime);
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .ticker-star {
+      color: var(--lime);
+      font-size: 16px
+    }
+
+    /* ── CONVERSION ── */
+    #conversion {
+      padding: 100px 0;
+      background: #fff;
+      overflow: hidden
+    }
+
+    .conversion-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center
+    }
+
+    .conv-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--lime);
+      margin-bottom: 14px
+    }
+
+    .conv-h2 {
+      font-size: clamp(28px, 4vw, 46px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      color: var(--lime);
+      margin-bottom: 16px
+    }
+
+    .conv-p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 380px;
+      margin-bottom: 28px
+    }
+
+    .notif-stack {
+      position: relative;
+      height: 200px;
+      margin-bottom: 32px
+    }
+
+    .notif-card {
+      position: absolute;
+      left: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--green);
+      border-radius: 14px;
+      padding: 12px 18px;
+      box-shadow: 0 8px 24px rgba(23, 77, 27, .3);
+      min-width: 260px;
+      opacity: 0;
+      transform: translateY(20px) scale(.95)
+    }
+
+    .notif-card.show {
+      animation: notifIn .5s forwards
+    }
+
+    .notif-card.hide {
+      animation: notifOut .4s forwards
+    }
+
+    .notif-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--lime);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden
+    }
+
+    .notif-icon-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain
+    }
+
+    .notif-text {
+      color: #fff
+    }
+
+    .notif-title {
+      font-size: 12.5px;
+      font-weight: 700
+    }
+
+    .notif-sub {
+      font-size: 11.5px;
+      opacity: .8;
+      margin-top: 1px
+    }
+
+    .notif-time {
+      margin-left: auto;
+      font-size: 10.5px;
+      color: rgba(255, 255, 255, .5);
+      flex-shrink: 0
+    }
+
+    .notif-0 {
+      top: 0
+    }
+
+    .notif-1 {
+      top: 68px
+    }
+
+    .notif-2 {
+      top: 136px
+    }
+
+    .phone-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center
+    }
+
+    .phone-frame {
+      width: 210px;
+      background: #fff;
+      border-radius: 32px;
+      border: 1.5px solid rgba(164, 244, 0, .15);
+      padding: 22px 18px 28px;
+      box-shadow: 0 24px 80px rgba(23, 77, 27, .12);
+      position: relative;
+      z-index: 2;
+      animation: floatY 4s ease-in-out infinite
+    }
+
+    .phone-notch {
+      width: 50px;
+      height: 4px;
+      background: var(--mint-mid);
+      border-radius: 99px;
+      margin: 0 auto 18px
+    }
+
+    .phone-logo-mark {
+      color: var(--lime);
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 14px;
+      letter-spacing: -.05em
+    }
+
+    .phone-lbl {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 2px
+    }
+
+    .phone-paying {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 10px
+    }
+
+    .phone-amount {
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--green-deep);
+      letter-spacing: -.03em;
+      line-height: 1
+    }
+
+    .phone-secure {
+      font-size: 10.5px;
+      color: var(--text-gray);
+      margin: 5px 0 16px
+    }
+
+    .phone-cta {
+      background: var(--lime);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      width: 100%
+    }
+
+    .phone-notif-float {
+      position: absolute;
+      bottom: -14px;
+      right: -50px;
+      background: var(--green);
+      border-radius: 14px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      box-shadow: 0 8px 24px rgba(23, 77, 27, .25);
+      z-index: 3;
+      animation: floatY 3.5s ease-in-out infinite 1s;
+      min-width: 190px
+    }
+
+    /* ── ACQUIRER ── */
+    #acquirer {
+      padding: 100px 0;
+      background: var(--mint);
+      overflow: hidden
+    }
+
+    .acquirer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center
+    }
+
+    .acq-frame {
+      border: 3px solid var(--lime);
+      border-radius: 24px;
+      padding: 28px 20px 20px;
+      background: #fff;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(164, 244, 0, .1)
+    }
+
+    .acq-stamp {
+      position: absolute;
+      top: -20px;
+      left: 20px;
+      background: #fff;
+      border: 2px solid var(--lime);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--lime);
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .acq-stamp img {
+      width: 14px;
+      height: 14px;
+      object-fit: contain
+    }
+
+    .route-tree {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px
+    }
+
+    .r-node {
+      background: var(--mint-mid);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .r-node.active {
+      background: var(--lime);
+      color: #fff;
+      border-color: var(--lime);
+      box-shadow: 0 4px 14px rgba(164, 244, 0, .3)
+    }
+
+    .r-node.success {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green)
+    }
+
+    .r-line {
+      width: 2px;
+      height: 16px;
+      background: var(--border);
+      border-radius: 2px
+    }
+
+    .r-line.pink {
+      background: var(--lime)
+    }
+
+    .r-line.wine {
+      background: var(--green)
+    }
+
+    .r-branches {
+      display: flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    .r-branch {
+      opacity: .45;
+      font-size: 10.5px;
+      padding: 5px 10px
+    }
+
+    .acq-dash {
+      background: var(--mint-mid);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11.5px
+    }
+
+    .acq-dash-pill {
+      background: var(--lime);
+      color: #fff;
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .acq-h2 {
+      font-size: clamp(26px, 3.5vw, 40px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      color: var(--text-dark);
+      margin-bottom: 14px
+    }
+
+    .acq-p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 28px
+    }
+
+    .feat-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px
+    }
+
+    .feat-pill {
+      border: 1.5px solid rgba(23, 77, 27, .15);
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: all .2s;
+      cursor: default
+    }
+
+    .feat-pill:hover {
+      background: var(--lime-pale);
+      border-color: var(--lime);
+      color: var(--lime)
+    }
+
+    .feat-pill svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--lime);
+      flex-shrink: 0
+    }
+
+    /* ── AWARDS CAROUSEL ── */
+    #awards {
+      padding: 100px 0;
+      background: #fff;
+      overflow: hidden
+    }
+
+    .awards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 60px;
+      align-items: center
+    }
+
+    .awards-h2 {
+      font-size: clamp(26px, 3.5vw, 42px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      color: var(--green-deep);
+      margin-bottom: 14px
+    }
+
+    .awards-p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.7
+    }
+
+    .carousel-outer {
+      overflow: hidden;
+      position: relative
+    }
+
+    .carousel-outer::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 80px;
+      background: linear-gradient(-90deg, #fff, transparent);
+      pointer-events: none;
+      z-index: 2
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 16px;
+      width: max-content;
+      animation: carouselSlide 22s linear infinite;
+      cursor: grab
+    }
+
+    .carousel-track:hover {
+      animation-play-state: paused
+    }
+
+    .award-card {
+      width: 210px;
+      flex-shrink: 0;
+      background: #1A0A12;
+      border-radius: 22px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s
+    }
+
+    .award-card:hover {
+      transform: translateY(-6px)
+    }
+
+    .award-card::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, rgba(164, 244, 0, .45), transparent 65%);
+      pointer-events: none
+    }
+
+    .award-tier {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--lime-light);
+      margin-bottom: 6px
+    }
+
+    .award-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      letter-spacing: -.02em
+    }
+
+    .award-milestone {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--lime);
+      letter-spacing: -.03em;
+      margin-bottom: 5px;
+      line-height: 1
+    }
+
+    .award-desc {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .45);
+      line-height: 1.55
+    }
+
+    /* ── PRICING ── */
+    #pricing {
+      padding: 80px 0;
+      background: var(--mint)
+    }
+
+    .pricing-box {
+      background: var(--green-deep);
+      border-radius: 32px;
+      padding: 72px 56px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      position: relative;
+      overflow: hidden
+    }
+
+    .pricing-box::before {
+      content: '';
+      position: absolute;
+      top: -120px;
+      right: -120px;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(164, 244, 0, .2), transparent 70%);
+      pointer-events: none
+    }
+
+    .pricing-box::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -80px;
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(164, 244, 0, .1), transparent 70%);
+      pointer-events: none
+    }
+
+    .pricing-left {
+      position: relative;
+      z-index: 1
+    }
+
+    .pricing-h2 {
+      font-size: clamp(26px, 4vw, 48px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      color: #fff;
+      margin-bottom: 16px
+    }
+
+    .pricing-h2 em {
+      color: var(--lime);
+      font-style: normal
+    }
+
+    .pricing-p {
+      font-size: 15px;
+      color: rgba(255, 255, 255, .5);
+      line-height: 1.7;
+      margin-bottom: 20px
+    }
+
+    .pricing-p2 {
+      font-size: 13.5px;
+      color: rgba(255, 255, 255, .35);
+      margin-top: 8px
+    }
+
+    .pricing-right {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center
+    }
+
+    .pricing-card {
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(164, 244, 0, .3);
+      border-radius: 24px;
+      padding: 34px 30px;
+      width: 100%;
+      max-width: 300px;
+      animation: floatY 5s ease-in-out infinite 2s
+    }
+
+    .pricing-card-lbl {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--lime);
+      margin-bottom: 10px
+    }
+
+    .pricing-rate {
+      font-size: clamp(32px, 4.5vw, 50px);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -.04em;
+      line-height: 1;
+      margin-bottom: 4px
+    }
+
+    .pricing-plus {
+      font-size: 20px;
+      color: var(--lime-light)
+    }
+
+    .pricing-per {
+      font-size: 13px;
+      color: rgba(255, 255, 255, .45);
+      margin-bottom: 22px
+    }
+
+    .pricing-hr {
+      border: none;
+      border-top: 1px solid rgba(255, 255, 255, .07);
+      margin-bottom: 18px
+    }
+
+    .pricing-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, .65);
+      margin-bottom: 9px
+    }
+
+    .pricing-row svg {
+      width: 15px;
+      height: 15px;
+      stroke: var(--lime);
+      flex-shrink: 0
+    }
+
+    .pricing-row strong {
+      color: #fff
+    }
+
+    .btn-pricing {
+      margin-top: 22px;
+      width: 100%;
+      background: var(--lime);
+      color: #fff;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      border-radius: 999px;
+      padding: 13px;
+      cursor: pointer;
+      transition: all .25s;
+      box-shadow: 0 4px 20px rgba(164, 244, 0, .4)
+    }
+
+    .btn-pricing:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(164, 244, 0, .55)
+    }
+
+    /* ── COMPETITION ── */
+    #competition {
+      padding: 100px 0;
+      background: #fff;
+      overflow: hidden
+    }
+
+    .comp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center
+    }
+
+    .comp-video-card {
+      border-radius: 24px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      position: relative;
+      background: linear-gradient(140deg, var(--green-deep), #43A047)
+    }
+
+    .comp-video-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 35% 40%, rgba(164, 244, 0, .4), transparent 60%)
+    }
+
+    .comp-inner {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 28px
+    }
+
+    .comp-trophy {
+      font-size: 52px;
+      text-align: center;
+      margin-bottom: 8px
+    }
+
+    .comp-inner h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -.02em;
+      margin-bottom: 6px
+    }
+
+    .comp-inner p {
+      font-size: 13px;
+      color: rgba(255, 255, 255, .6)
+    }
+
+    .comp-h2 {
+      font-size: clamp(24px, 3.2vw, 38px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      color: var(--green-deep);
+      margin-bottom: 14px
+    }
+
+    .comp-h2 span {
+      color: var(--lime)
+    }
+
+    .comp-p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 20px
+    }
+
+    .powered {
+      font-size: 11.5px;
+      color: var(--text-gray);
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .powered strong {
+      color: var(--lime);
+      font-weight: 700
+    }
+
+    /* ── SELLER SECTION ── */
+    #seller {
+      padding: 100px 0;
+      background: var(--mint);
+      overflow: hidden
+    }
+
+    .seller-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center
+    }
+
+    .seller-visual {
+      position: relative
+    }
+
+    .seller-phone-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center
+    }
+
+    .seller-phone {
+      width: 200px;
+      background: #fff;
+      border-radius: 32px;
+      border: 1.5px solid rgba(164, 244, 0, .15);
+      padding: 20px 16px 24px;
+      box-shadow: 0 20px 60px rgba(23, 77, 27, .12);
+      animation: floatY 4s ease-in-out infinite .5s
+    }
+
+    .seller-phone-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px
+    }
+
+    .seller-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--lime);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      overflow: hidden
+    }
+
+    .seller-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain
+    }
+
+    .seller-notifs {
+      position: absolute;
+      right: -60px;
+      top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .seller-notif {
+      background: var(--green);
+      color: #fff;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 10.5px;
+      font-weight: 600;
+      min-width: 160px;
+      box-shadow: 0 4px 14px rgba(23, 77, 27, .2)
+    }
+
+    .seller-notif-sub {
+      font-size: 9.5px;
+      opacity: .7;
+      margin-top: 1px
+    }
+
+    .s-n1 {
+      animation: floatY 3s ease-in-out infinite
+    }
+
+    .s-n2 {
+      animation: floatY 3.5s ease-in-out infinite .5s
+    }
+
+    .s-n3 {
+      animation: floatY 4s ease-in-out infinite 1s
+    }
+
+    .manager-chip {
+      position: absolute;
+      bottom: -12px;
+      left: 10px;
+      background: var(--green-deep);
+      color: #fff;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 10.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px rgba(61, 8, 32, .3)
+    }
+
+    .manager-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      flex-shrink: 0
+    }
+
+    .seller-h2 {
+      font-size: clamp(24px, 3.2vw, 38px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      color: var(--green-deep);
+      margin-bottom: 14px
+    }
+
+    .seller-p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.7
+    }
+
+    /* ── FAQ ── */
+    #faq {
+      padding: 80px 0;
+      background: var(--mint)
+    }
+
+    .faq-box {
+      background: var(--green-deep);
+      border-radius: 32px;
+      padding: 72px 56px;
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 60px;
+      align-items: start;
+      position: relative;
+      overflow: hidden
+    }
+
+    .faq-box::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      left: -80px;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(164, 244, 0, .18), transparent 70%);
+      pointer-events: none
+    }
+
+    .faq-left {
+      position: relative;
+      z-index: 1
+    }
+
+    .faq-img-card {
+      border-radius: 22px;
+      background: linear-gradient(160deg, #174D1B, #43A047);
+      aspect-ratio: 3/4;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 26px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .faq-img-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 60% 30%, rgba(164, 244, 0, .3), transparent 60%)
+    }
+
+    .faq-img-luck {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      margin-bottom: 16px
+    }
+
+    .faq-img-luck img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain
+    }
+
+    .faq-img-text {
+      position: relative;
+      z-index: 1
+    }
+
+    .faq-img-text h3 {
+      font-size: 19px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -.02em
+    }
+
+    .faq-img-text p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .55);
+      margin-top: 3px
+    }
+
+    .faq-right {
+      position: relative;
+      z-index: 1
+    }
+
+    .faq-title {
+      font-size: clamp(52px, 8vw, 86px);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -.06em;
+      line-height: .9;
+      margin-bottom: 6px
+    }
+
+    .faq-subtitle {
+      font-size: 17px;
+      color: rgba(255, 255, 255, .45);
+      margin-bottom: 32px
+    }
+
+    .faq-item {
+      border: 1px solid rgba(164, 244, 0, .2);
+      border-radius: 14px;
+      margin-bottom: 9px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, .04);
+      transition: border-color .2s, background .2s
+    }
+
+    .faq-item:hover {
+      border-color: rgba(164, 244, 0, .4);
+      background: rgba(255, 255, 255, .07)
+    }
+
+    .faq-item.open {
+      background: rgba(255, 255, 255, .08);
+      border-color: rgba(164, 244, 0, .5)
+    }
+
+    .faq-q {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 17px 20px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      gap: 12px;
+      user-select: none
+    }
+
+    .faq-plus {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(164, 244, 0, .4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--lime);
+      font-size: 16px;
+      transition: transform .3s, background .3s;
+      line-height: 1
+    }
+
+    .faq-item.open .faq-plus {
+      transform: rotate(45deg);
+      background: rgba(164, 244, 0, .15)
+    }
+
+    .faq-ans {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .45s cubic-bezier(.22, 1, .36, 1)
+    }
+
+    .faq-item.open .faq-ans {
+      max-height: 200px
+    }
+
+    .faq-ans-inner {
+      padding: 0 20px 16px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, .5);
+      line-height: 1.7
+    }
+
+    /* ── CTA SECTION ── */
+    #cta {
+      padding: 80px 0;
+      background: #fff
+    }
+
+    .cta-box {
+      background: var(--mint-mid);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 72px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(164, 244, 0, .1), transparent 70%)
+    }
+
+    .cta-h2 {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      color: var(--green-deep);
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1
+    }
+
+    .cta-p {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1
+    }
+
+    .btn-cta {
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--green);
+      border: none;
+      border-radius: 999px;
+      padding: 16px 40px;
+      cursor: pointer;
+      transition: all .25s;
+      box-shadow: 0 6px 24px rgba(23, 77, 27, .3);
+      position: relative;
+      overflow: hidden;
+      z-index: 1
+    }
+
+    .btn-cta::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--lime), var(--green));
+      opacity: 0;
+      transition: opacity .25s
+    }
+
+    .btn-cta:hover::after {
+      opacity: 1
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(164, 244, 0, .4)
+    }
+
+    .btn-cta span {
+      position: relative;
+      z-index: 1
+    }
+
+    /* ── FOOTER ── */
+    #footer {
+      padding: 40px 0 60px;
+      background: var(--mint)
+    }
+
+    .footer-box {
+      background: #fff;
+      border: 1px solid rgba(164, 244, 0, .08);
+      border-radius: 28px;
+      padding: 52px 44px 36px;
+      box-shadow: 0 4px 24px rgba(23, 77, 27, .05)
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.4fr;
+      gap: 40px;
+      margin-bottom: 36px
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      margin-bottom: 10px
+    }
+
+    .footer-logo img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain
+    }
+
+    .footer-logo-txt {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -.02em
+    }
+
+    .footer-tag {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 18px;
+      max-width: 190px
+    }
+
+    .footer-socials {
+      display: flex;
+      flex-direction: column;
+      gap: 9px
+    }
+
+    .footer-social-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--lime);
+      text-decoration: none;
+      transition: opacity .2s
+    }
+
+    .footer-social-link:hover {
+      opacity: .7
+    }
+
+    .social-ico {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--lime-pale);
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .footer-col h4 {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-dark);
+      margin-bottom: 14px
+    }
+
+    .footer-col ul {
+      list-style: none
+    }
+
+    .footer-col li {
+      margin-bottom: 9px
+    }
+
+    .footer-col a {
+      text-decoration: none;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      transition: color .2s
+    }
+
+    .footer-col a:hover {
+      color: var(--lime)
+    }
+
+    .app-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 9px
+    }
+
+    .app-btn {
+      background: var(--green-deep);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s
+    }
+
+    .app-btn:hover {
+      background: var(--green)
+    }
+
+    .app-btn-txt {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start
+    }
+
+    .app-btn-sm {
+      font-size: 9.5px;
+      opacity: .65;
+      font-weight: 500
+    }
+
+    .app-btn-lg {
+      font-size: 12.5px;
+      font-weight: 700
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(164, 244, 0, .07);
+      padding-top: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--text-gray)
+    }
+
+    .footer-cta {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--lime);
+      text-decoration: none
+    }
+
+    /* ── REVEAL ── */
+    .rv {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity .75s cubic-bezier(.22, 1, .36, 1), transform .75s cubic-bezier(.22, 1, .36, 1)
+    }
+
+    .rv.on {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    .rv.d1 {
+      transition-delay: .1s
+    }
+
+    .rv.d2 {
+      transition-delay: .2s
+    }
+
+    .rv.d3 {
+      transition-delay: .3s
+    }
+
+    .rv.d4 {
+      transition-delay: .4s
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(28px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    @keyframes floatY {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-10px)
+      }
+    }
+
+    @keyframes ticker {
+      0% {
+        transform: translateX(0)
+      }
+
+      100% {
+        transform: translateX(-50%)
+      }
+    }
+
+    @keyframes carouselSlide {
+      0% {
+        transform: translateX(0)
+      }
+
+      100% {
+        transform: translateX(-50%)
+      }
+    }
+
+    @keyframes notifIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(.95)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1)
+      }
+    }
+
+    @keyframes notifOut {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1)
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(-8px) scale(.95)
+      }
+    }
+
+    @keyframes routePulse {
+
+      0%,
+      100% {
+        box-shadow: 0 4px 14px rgba(164, 244, 0, .3)
+      }
+
+      50% {
+        box-shadow: 0 4px 24px rgba(164, 244, 0, .6)
+      }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px) {
+      .nav-links {
+        display: none
+      }
+
+      .nav-hamburger {
+        display: flex
+      }
+
+      .conversion-grid,
+      .acquirer-grid,
+      .awards-grid,
+      .comp-grid,
+      .seller-grid,
+      .faq-box,
+      .pricing-box {
+        grid-template-columns: 1fr
+      }
+
+      .pricing-box,
+      .faq-box {
+        padding: 48px 28px
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .comp-video-card {
+        order: -1
+      }
+
+      .phone-notif-float,
+      .seller-notifs {
+        display: none
+      }
+    }
+
+    @media(max-width:600px) {
+      #navbar {
+        width: calc(100% - 20px)
+      }
+
+      .hero-ctas {
+        flex-direction: column;
+        align-items: center
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr
+      }
+
+      .pricing-box,
+      .faq-box {
+        border-radius: 20px;
+        padding: 36px 20px
+      }
+    }
+
+    /* ── MOBILE MENU ── */
+    .mob-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, .97);
+      backdrop-filter: blur(20px);
+      z-index: 998;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px
+    }
+
+    .mob-menu.open {
+      display: flex
+    }
+
+    .mob-menu a {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--green-deep);
+      text-decoration: none;
+      padding: 11px 28px;
+      border-radius: 999px;
+      transition: background .2s, color .2s
+    }
+
+    .mob-menu a:hover {
+      background: var(--lime-pale);
+      color: var(--lime)
+    }
+
+    .mob-close {
+      position: absolute;
+      top: 22px;
+      right: 22px;
+      background: none;
+      border: none;
+      font-size: 26px;
+      cursor: pointer;
+      color: var(--green-deep)
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a class="nav-logo" href="#">
+        <img class="nav-logo-img" src="./luckpay-logo.png" alt="LuckPay">
+        <span class="nav-logo-text">LuckPay</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#hero">Início</a></li>
+        <li><a href="#conversion">Benefícios</a></li>
+        <li><a href="#awards">Premiações</a></li>
+        <li><a href="#seller">Quem Somos</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="btn-luck">Login</button>
+        <button class="btn-primary"><span>Cadastre-se</span></button>
+      </div>
+      <button class="nav-hamburger" id="menuBtn">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="mob-menu" id="mobMenu">
+    <button class="mob-close" id="mobClose">✕</button>
+    <a href="#hero" onclick="closeMob()">Início</a>
+    <a href="#conversion" onclick="closeMob()">Benefícios</a>
+    <a href="#awards" onclick="closeMob()">Premiações</a>
+    <a href="#seller" onclick="closeMob()">Quem Somos</a>
+    <a href="#faq" onclick="closeMob()">FAQ</a>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn-luck" style="font-size:15px;padding:11px 24px">Login</button>
+      <button class="btn-primary" style="font-size:15px;padding:11px 24px"><span>Cadastre-se</span></button>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg">
+      <svg viewBox="0 0 1440 900" fill="none" preserveAspectRatio="xMidYMid slice">
+        <path d="M-100 450Q200 280 550 420T1100 380T1600 410" stroke="rgba(232,23,122,0.07)" stroke-width="2"
+          fill="none" />
+        <path d="M-100 550Q300 380 650 520T1250 460T1600 490" stroke="rgba(232,23,122,0.05)" stroke-width="1.5"
+          fill="none" />
+        <path d="M-100 350Q250 220 580 350T1080 300T1600 340" stroke="rgba(232,23,122,0.04)" stroke-width="1"
+          fill="none" />
+        <circle cx="180" cy="160" r="200" fill="rgba(232,23,122,0.025)" />
+        <circle cx="1300" cy="650" r="250" fill="rgba(107,16,56,0.035)" />
+      </svg>
+    </div>
+    <div class="hero-content">
+      <div class="social-pill">
+        <div class="pill-avatars">
+          <div class="pill-avatar" style="background:#A4F400">A</div>
+          <div class="pill-avatar" style="background:#2E7D32">B</div>
+          <div class="pill-avatar" style="background:#C0136A">C</div>
+        </div>
+        + 3.000 Sellers que confiam em nós!
+      </div>
+      <h1 class="hero-h1">A <em style="color:var(--lime);font-style:normal">sorte</em> favorece quem<br>opera melhor!
+      </h1>
+      <p class="hero-sub">A tecnologia que faz seu negócio crescer no automático.</p>
+      <div class="hero-ctas">
+        <button class="btn-hero-p"><span>Criar conta!</span></button>
+        <button class="btn-hero-g">Falar com especialista</button>
+      </div>
+      <div class="hero-badges">
+        <div class="hero-badge">
+          <div class="hero-badge-icon"></div>Alta Aprovação
+        </div>
+        <div class="hero-badge">
+          <div class="hero-badge-icon"></div>Dados Criptografados
+        </div>
+        <div class="hero-badge">
+          <div class="hero-badge-icon"></div>Plataforma Própria
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="tickerTrack">
+      <div class="ticker-item"><span class="ticker-star">✦</span>Alta Aprovação</div>
+      <div class="ticker-item"><span class="ticker-dot"></span>Dados Criptografados</div>
+      <div class="ticker-item"><span class="ticker-star">✦</span>Plataforma Própria</div>
+      <div class="ticker-item"><span class="ticker-dot"></span>Multi-Adquirentes</div>
+      <div class="ticker-item"><span class="ticker-star">✦</span>D+0 Pix</div>
+      <div class="ticker-item"><span class="ticker-dot"></span>Suporte Exclusivo</div>
+      <div class="ticker-item"><span class="ticker-star">✦</span>Alta Aprovação</div>
+      <div class="ticker-item"><span class="ticker-dot"></span>Dados Criptografados</div>
+      <div class="ticker-item"><span class="ticker-star">✦</span>Plataforma Própria</div>
+      <div class="ticker-item"><span class="ticker-dot"></span>Multi-Adquirentes</div>
+      <div class="ticker-item"><span class="ticker-star">✦</span>D+0 Pix</div>
+      <div class="ticker-item"><span class="ticker-dot"></span>Suporte Exclusivo</div>
+    </div>
+  </div>
+
+  <!-- CONVERSION -->
+  <section id="conversion">
+    <div class="container">
+      <div class="conversion-grid">
+        <div class="rv">
+          <p class="conv-label">Alta Conversão</p>
+          <div class="notif-stack" id="notifStack">
+            <div class="notif-card notif-0" id="n0">
+              <div class="notif-icon-box"><img src="./luckpay-logo.png" alt=""></div>
+              <div class="notif-text">
+                <div class="notif-title">Venda realizada no Pix!</div>
+                <div class="notif-sub">Comissão: R$ 69,95</div>
+              </div>
+              <div class="notif-time">agora</div>
+            </div>
+            <div class="notif-card notif-1" id="n1">
+              <div class="notif-icon-box"><img src="./luckpay-logo.png" alt=""></div>
+              <div class="notif-text">
+                <div class="notif-title">Venda realizada no Pix!</div>
+                <div class="notif-sub">Comissão: R$ 49,95</div>
+              </div>
+              <div class="notif-time">agora</div>
+            </div>
+            <div class="notif-card notif-2" id="n2">
+              <div class="notif-icon-box"><img src="./luckpay-logo.png" alt=""></div>
+              <div class="notif-text">
+                <div class="notif-title">Venda realizada no Pix!</div>
+                <div class="notif-sub">Comissão: R$ 29,95</div>
+              </div>
+              <div class="notif-time">agora</div>
+            </div>
+          </div>
+          <h2 class="conv-h2">Alta conversão na sua operação</h2>
+          <p class="conv-p">Sua conversão cresce quando a oferta certa aparece no momento certo.</p>
+        </div>
+        <div class="phone-wrap rv d2">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-logo-mark">✦</div>
+            <div class="phone-lbl">Você está</div>
+            <div class="phone-paying">Pagando</div>
+            <div class="phone-amount">R$34,89</div>
+            <div class="phone-secure">Para Compra Segura</div>
+            <button class="phone-cta">Finalizar pagamento</button>
+          </div>
+          <div class="phone-notif-float">
+            <div class="notif-icon-box" style="width:30px;height:30px;border-radius:7px"><img src="./luckpay-logo.png"
+                alt=""></div>
+            <div class="notif-text">
+              <div class="notif-title">Venda realizada no Pix!</div>
+              <div class="notif-sub">Comissão: R$ 69,95</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACQUIRER -->
+  <section id="acquirer">
+    <div class="container">
+      <div class="acquirer-grid">
+        <div class="rv">
+          <div class="acq-frame">
+            <div class="acq-stamp">
+              <img src="./luckpay-logo.png" style="width:14px;height:14px;object-fit:contain"> LuckPay de Qualidade
+            </div>
+            <div class="route-tree">
+              <div class="r-node">Seu Cliente</div>
+              <div class="r-line"></div>
+              <div class="r-branches">
+                <div class="r-node r-branch">Adquirente 1</div>
+                <div class="r-node r-branch">Adquirente 2</div>
+              </div>
+              <div class="r-line pink"></div>
+              <div class="r-node active" id="routeActive" style="animation:routePulse 2s ease-in-out infinite">✦
+                Adquirente3</div>
+              <div class="r-line pink"></div>
+              <div class="r-node active" style="background:var(--lime-pale);color:var(--lime);border-color:var(--lime)">
+                ✦ Pix Gerado!</div>
+              <div class="r-line wine"></div>
+            </div>
+            <div class="acq-dash">
+              <span style="font-size:11.5px;color:var(--text-muted)">Status da venda</span>
+              <div class="acq-dash-pill">✓ Venda Aprovada</div>
+            </div>
+          </div>
+        </div>
+        <div class="rv d2">
+          <p class="conv-label">Multiadquirência inteligente</p>
+          <h2 class="acq-h2">Se uma adquirente falhar, a Lucks muda a rota em tempo real.</h2>
+          <p class="acq-p">Sua operação segue com a melhor chance de aprovação, sem travar suas vendas.</p>
+          <div class="feat-pills">
+            <div class="feat-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>Fácil
+            </div>
+            <div class="feat-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12,6 12,12 16,14" />
+              </svg>Rápido
+            </div>
+            <div class="feat-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>Seguro
+            </div>
+            <div class="feat-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22,4 12,14.01 9,11.01" />
+              </svg>Eficaz
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AWARDS -->
+  <section id="awards">
+    <div class="container">
+      <div class="awards-grid">
+        <div class="rv">
+          <p class="conv-label">Premiações</p>
+          <h2 class="awards-h2">A <em style="color:var(--lime);font-style:normal">sorte</em> favorece quem<br>não para
+            de crescer.</h2>
+          <p class="awards-p">E a Lucks está aqui para impulsionar cada próxima conquista.</p>
+        </div>
+        <div class="rv d2">
+          <div class="carousel-outer">
+            <div class="carousel-track">
+              <div class="award-card">
+                <div class="award-tier">LuckPay Award</div>
+                <div class="award-name">Platinum</div>
+                <div class="award-milestone">100 Mil</div>
+                <div class="award-desc">Para quem transforma os primeiros 100 mil em apenas o começo.</div>
+              </div>
+              <div class="award-card" style="background:#1C1000">
+                <div class="award-tier">LuckPay Award</div>
+                <div class="award-name">Gold</div>
+                <div class="award-milestone" style="color:#FFB800">500 Mil</div>
+                <div class="award-desc">Reconhece a ousadia de quem encara grandes desafios e faz acontecer.</div>
+              </div>
+              <div class="award-card" style="background:#0A1020">
+                <div class="award-tier">LuckPay Award</div>
+                <div class="award-name">Wine</div>
+                <div class="award-milestone" style="color:#C0136A">1 Milhão</div>
+                <div class="award-desc">Celebra a excelência rara daqueles que moldam legados.</div>
+              </div>
+              <div class="award-card" style="background:#001A10">
+                <div class="award-tier">LuckPay Award</div>
+                <div class="award-name">Emerald</div>
+                <div class="award-milestone" style="color:#00C97A">5 Milhões</div>
+                <div class="award-desc">Para quem chega aos 5 milhões não por acaso, mas por legado.</div>
+              </div>
+              <div class="award-card">
+                <div class="award-tier">LuckPay Award</div>
+                <div class="award-name">Platinum</div>
+                <div class="award-milestone">100 Mil</div>
+                <div class="award-desc">Para quem transforma os primeiros 100 mil em apenas o começo.</div>
+              </div>
+              <div class="award-card" style="background:#1C1000">
+                <div class="award-tier">LuckPay Award</div>
+                <div class="award-name">Gold</div>
+                <div class="award-milestone" style="color:#FFB800">500 Mil</div>
+                <div class="award-desc">Reconhece a ousadia de quem encara grandes desafios e faz acontecer.</div>
+              </div>
+              <div class="award-card" style="background:#0A1020">
+                <div class="award-tier">LuckPay Award</div>
+                <div class="award-name">Wine</div>
+                <div class="award-milestone" style="color:#C0136A">1 Milhão</div>
+                <div class="award-desc">Celebra a excelência rara daqueles que moldam legados.</div>
+              </div>
+              <div class="award-card" style="background:#001A10">
+                <div class="award-tier">LuckPay Award</div>
+                <div class="award-name">Emerald</div>
+                <div class="award-milestone" style="color:#00C97A">5 Milhões</div>
+                <div class="award-desc">Para quem chega aos 5 milhões não por acaso, mas por legado.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="container">
+      <div class="pricing-box">
+        <div class="pricing-left rv">
+          <h2 class="pricing-h2">Mais caixa, <em>menos taxas.</em><br>Conheça nossa condição!</h2>
+          <p class="pricing-p">Venda com agilidade e saque com velocidade, mantenha seu dinheiro sempre rodando.</p>
+          <p class="pricing-p2">Quer condições especiais? fale com nosso gerente.</p>
+        </div>
+        <div class="pricing-right rv d2">
+          <div class="pricing-card">
+            <div class="pricing-card-lbl">✦ Desde a sua primeira venda</div>
+            <div class="pricing-rate">4.50%<span class="pricing-plus"> + R$1,50</span></div>
+            <div class="pricing-per">Por venda aprovada.</div>
+            <hr class="pricing-hr">
+            <div class="pricing-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12,6 12,12 16,14" />
+              </svg>
+              Prazo de recebimento: <strong>D+0 Pix</strong>
+            </div>
+            <div class="pricing-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+              Sem mensalidade
+            </div>
+            <div class="pricing-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+              Sem taxa de adesão
+            </div>
+            <button class="btn-pricing">Criar minha conta grátis</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPETITION -->
+  <section id="competition">
+    <div class="container">
+      <div class="comp-grid">
+        <div class="comp-video-card rv">
+          <div class="comp-inner"
+            style="padding:0; height:100%; display:flex; align-items:center; justify-content:center;">
+            <img src="lucksellers.png" alt="Top Sellers"
+              style="width:100%; height:100%; object-fit:cover; display:block; border-radius:24px;">
+          </div>
+        </div>
+        <div class="rv d2">
+          <p class="conv-label">Competição Mensal</p>
+          <h2 class="comp-h2">Na Lucks, sua <span>performance</span><br>importa e é recompensada.</h2>
+          <p class="comp-p">Todos os meses, os sellers disputam o ranking para ganhar prêmios exclusivos. Vendeu mais?
+            Sobe no ranking. Atingiu o topo? Premiação garantida!</p>
+          <div class="powered">
+            <span style="color:var(--lime)">✦</span>
+            Powered by: <strong>LuckPay Experience</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SELLER / QUEM SOMOS -->
+  <section id="seller">
+    <div class="container">
+      <div class="seller-grid">
+        <div class="seller-visual rv">
+          <div class="seller-phone-wrap">
+            <div class="seller-phone">
+              <div class="seller-phone-top">
+                <div style="font-size:11px;font-weight:700;color:var(--text-dark)">LuckPay & Seller!</div>
+                <div class="seller-avatar"><img src="./luckpay-logo.png" alt=""
+                    style="width:100%;height:100%;object-fit:contain"></div>
+              </div>
+              <div style="font-size:10px;font-weight:600;color:var(--text-muted);margin-bottom:10px">Bem-vindo! 👋</div>
+              <div style="background:var(--mint-mid);border-radius:8px;padding:10px;margin-bottom:8px">
+                <div style="font-size:9px;color:var(--text-gray);margin-bottom:3px">Faturamento Bruto</div>
+                <div style="font-size:16px;font-weight:800;color:var(--green-deep)">R$ 2.392,00</div>
+              </div>
+              <div style="background:var(--mint-mid);border-radius:8px;padding:10px">
+                <div style="font-size:9px;color:var(--text-gray);margin-bottom:3px">Vendas Hoje</div>
+                <div style="font-size:16px;font-weight:800;color:var(--lime)">322</div>
+              </div>
+            </div>
+            <div class="seller-notifs">
+              <div class="seller-notif s-n1">
+                <div>Venda realizada no Pix!</div>
+                <div class="seller-notif-sub">Comissão: R$ 49,95</div>
+              </div>
+              <div class="seller-notif s-n2">
+                <div>Venda realizada no Pix!</div>
+                <div class="seller-notif-sub">Comissão: R$ 29,95</div>
+              </div>
+              <div class="seller-notif s-n3">
+                <div>Venda realizada no Pix!</div>
+                <div class="seller-notif-sub">Comissão: R$ 17,54</div>
+              </div>
+            </div>
+            <div class="manager-chip">
+              <div class="manager-dot"></div>
+              Gerente Lucas — Online
+            </div>
+          </div>
+        </div>
+        <div class="rv d2">
+          <p class="conv-label">LuckPay & Seller</p>
+          <h2 class="seller-h2">Nós prezamos por um bom relacionamento com todos os sellers!</h2>
+          <p class="seller-p">Na LuckPay, todos os sellers têm acesso a um gerente que sempre está realmente preocupado
+            em fazer sua operação continuar vendendo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <div class="faq-box">
+        <div class="faq-left rv">
+          <div class="faq-img-card" style="padding:0; background:#000;">
+            <video src="video.mp4" autoplay loop muted playsinline
+              style="width:100%; height:100%; object-fit:cover; display:block;"></video>
+          </div>
+        </div>
+        <div class="faq-right rv d2">
+          <div class="faq-title">F.A.Q</div>
+          <div class="faq-subtitle">Dúvidas frequentes!</div>
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">O que é a LuckPay?<div class="faq-plus">+</div>
+            </div>
+            <div class="faq-ans">
+              <div class="faq-ans-inner">A LuckPay é um gateway de pagamento que torna suas transações online rápidas,
+                seguras e altamente aprovadas. Em resumo: você vende, e a Lucks garante que o pagamento passe — simples,
+                eficiente e do jeito certo.</div>
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">Como funciona a alta taxa de conversão da Lucks?<div
+                class="faq-plus">+</div>
+            </div>
+            <div class="faq-ans">
+              <div class="faq-ans-inner">A Lucks utiliza nominais confiáveis e um sistema de multi-adquirentes que
+                escolhe automaticamente a melhor rota para cada pagamento. Isso reduz falhas e aumenta a taxa de
+                aprovação da sua operação.</div>
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">Preciso faturar quanto pra ter um gerente exclusivo?<div
+                class="faq-plus">+</div>
+            </div>
+            <div class="faq-ans">
+              <div class="faq-ans-inner">R$ 0. Assim que você criar sua conta, nossa equipe já entra em contato para te
+                acompanhar. Aqui, suporte exclusivo não depende de faturamento — depende só de você começar.</div>
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">A Lucks funciona com quais tipos de operações?<div
+                class="faq-plus">+</div>
+            </div>
+            <div class="faq-ans">
+              <div class="faq-ans-inner">Atendemos operações de todos os tamanhos: e-commerce, infoprodutos, SaaS,
+                cursos online e negócios de alta escala. Nossa infraestrutura foi construída para lidar com tráfego
+                intenso, rotas dinâmicas e múltiplas adquirentes.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="container">
+      <div class="cta-box rv">
+        <h2 class="cta-h2">Pronto para operar com mais sorte, escala e aprovação?</h2>
+        <p class="cta-p">Então crie agora sua conta na LuckPay e receba todo o atendimento necessário.</p>
+        <button class="btn-cta"><span>Cadastre-se</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-box">
+        <div class="footer-grid">
+          <div>
+            <a class="footer-logo" href="#">
+              <img src="./luckpay-logo.png" alt="LuckPay" style="width:26px;height:26px;object-fit:contain">
+              <span class="footer-logo-txt">LuckPay</span>
+            </a>
+            <p class="footer-tag">O lado invisível que faz sua operação crescer!</p>
+            <div class="footer-socials">
+              <a class="footer-social-link" href="https://www.linkedin.com/company/luckpay" target="_blank">
+                <div class="social-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--lime)"
+                    stroke-width="2" stroke-linecap="round">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                    <rect x="2" y="9" width="4" height="12" />
+                    <circle cx="4" cy="4" r="2" />
+                  </svg></div>
+                LinkedIn
+              </a>
+              <a class="footer-social-link" href="https://www.instagram.com/luckpay/" target="_blank">
+                <div class="social-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--lime)"
+                    stroke-width="2" stroke-linecap="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                  </svg></div>
+                Instagram
+              </a>
+            </div>
+          </div>
+          <div class="footer-col">
+            <h4>Páginas</h4>
+            <ul>
+              <li><a href="#">Início</a></li>
+              <li><a href="#">Benefícios</a></li>
+              <li><a href="#">Premiações</a></li>
+              <li><a href="#">Quem Somos</a></li>
+              <li><a href="#">FAQ</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Informação</h4>
+            <ul>
+              <li><a href="#">Suporte</a></li>
+              <li><a href="#">P. de Privacidade</a></li>
+              <li><a href="#">Termos de uso</a></li>
+              <li><a href="#">404</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Baixe o app</h4>
+            <div class="app-btns">
+              <a class="app-btn" href="https://apps.apple.com/br/app/luckpayments/id6753230064" target="_blank">
+                <span style="font-size:20px">🍎</span>
+                <div class="app-btn-txt"><span class="app-btn-sm">Disponível na</span><span class="app-btn-lg">App
+                    Store</span></div>
+              </a>
+              <a class="app-btn" href="https://play.google.com/store/apps/details?id=com.br.luckpay" target="_blank">
+                <span style="font-size:20px">▶</span>
+                <div class="app-btn-txt"><span class="app-btn-sm">Disponível no</span><span class="app-btn-lg">Google
+                    Play</span></div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span class="footer-copy">© 2025 LuckPay.</span>
+          <a class="footer-cta" href="#">Become a Luck →</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── NAVBAR SCROLL ──
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ── MOBILE MENU ──
+    document.getElementById('menuBtn').addEventListener('click', () => document.getElementById('mobMenu').classList.add('open'));
+    document.getElementById('mobClose').addEventListener('click', closeMob);
+    function closeMob() { document.getElementById('mobMenu').classList.remove('open') }
+
+    // ── SCROLL REVEAL ──
+    const rvEls = document.querySelectorAll('.rv');
+    const rvObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+    }, { threshold: 0.1 });
+    rvEls.forEach(el => rvObs.observe(el));
+
+    // ── FAQ ──
+    function toggleFaq(btn) {
+      const item = btn.parentElement;
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    // ── ANIMATED PIX NOTIFICATIONS ──
+    // Show notifications sequentially with pop-in animation
+    (function () {
+      const cards = document.querySelectorAll('.notif-card');
+      const amounts = ['R$ 69,95', 'R$ 49,95', 'R$ 29,95', 'R$ 17,54', 'R$ 87,00', 'R$ 124,50'];
+      let idx = 0;
+      // initial show
+      cards.forEach((c, i) => {
+        setTimeout(() => {
+          c.style.opacity = '1';
+          c.style.transform = 'translateY(0) scale(1)';
+          c.style.transition = 'opacity .4s, transform .4s';
+        }, i * 220);
+      });
+      // cycle top notification every 2.5s
+      setInterval(() => {
+        const topCard = cards[0];
+        // flash out
+        topCard.style.transition = 'opacity .3s, transform .3s';
+        topCard.style.opacity = '0';
+        topCard.style.transform = 'translateY(-10px) scale(.95)';
+        setTimeout(() => {
+          // update amount
+          idx = (idx + 1) % amounts.length;
+          topCard.querySelector('.notif-sub').textContent = 'Comissão: ' + amounts[idx];
+          topCard.style.transform = 'translateY(12px) scale(.95)';
+          setTimeout(() => {
+            topCard.style.transition = 'opacity .35s, transform .35s';
+            topCard.style.opacity = '1';
+            topCard.style.transform = 'translateY(0) scale(1)';
+          }, 60);
+        }, 320);
+      }, 2500);
+    })();
+
+    // ── ROUTE ANIMATION — highlight acquirers one by one ──
+    (function () {
+      const branches = document.querySelectorAll('.r-branch');
+      const active = document.getElementById('routeActive');
+      const names = ['Adquirente 1', 'Adquirente 2', 'Adquirente3'];
+      let current = 2;
+      setInterval(() => {
+        current = (current + 1) % 3;
+        active.textContent = '✦ ' + names[current];
+        // Flash branches
+        branches.forEach((b, i) => {
+          b.style.opacity = (i === current && current < 2) ? '0.9' : '0.35';
+        });
+      }, 2000);
+    })();
+  </script>
+</body>
+
+</html>
