@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LuckPay — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pink:#2E7D32;
+  --pink-light:#C8FF5A;
+  --pink-pale:#F1FFD6;
+  --pink-bg:#F7FFE9;
+  --blush:#E9FFC2;
+  --white:#FFFFFF;
+  --border:rgba(164,244,0,0.18);
+  --border-light:rgba(164,244,0,0.1);
+  --text:#0F1A0F;
+  --text-2:#5F7A60;
+  --text-3:#8A9B8B;
+  --success:#2E7D32;
+  --success-bg:#F1FFD6;
+  --warn:#D97706;
+  --warn-bg:#FEF3C7;
+  --sidebar-w:240px;
+  --font:'Plus Jakarta Sans',-apple-system,sans-serif;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--blush);color:var(--text);-webkit-font-smoothing:antialiased;display:flex}
+
+/* ── SIDEBAR ── */
+#sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:#fff;border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  height:100vh;overflow-y:auto;overflow-x:hidden;
+  transition:width .3s ease;
+  z-index:10;
+}
+#sidebar.collapsed{width:56px}
+.sb-logo{
+  padding:18px 16px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border-light);flex-shrink:0;
+}
+.sb-logo-inner{display:flex;align-items:center;gap:8px;overflow:hidden}
+.sb-logo-img{width:26px;height:26px;object-fit:contain;flex-shrink:0}
+.sb-logo-txt{font-size:14px;font-weight:800;color:var(--text);white-space:nowrap;letter-spacing:-.02em}
+.sb-collapse{
+  width:26px;height:26px;border-radius:6px;
+  border:1px solid var(--border);background:#fff;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--text-2);font-size:12px;flex-shrink:0;
+  transition:background .15s;
+}
+.sb-collapse:hover{background:var(--pink-pale)}
+.sb-wallet{padding:14px 16px 10px;border-bottom:1px solid var(--border-light);overflow:hidden}
+.sb-wallet-lbl{font-size:10.5px;color:var(--text-3);font-weight:500;margin-bottom:2px;white-space:nowrap}
+.sb-wallet-val{font-size:17px;font-weight:700;color:var(--text);white-space:nowrap}
+.sb-section{padding:12px 10px 4px;overflow:hidden}
+.sb-section-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);padding:0 6px 6px;white-space:nowrap}
+.sb-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:8px;cursor:pointer;
+  font-size:13px;font-weight:500;color:var(--text-2);
+  transition:background .15s,color .15s;white-space:nowrap;
+  margin-bottom:1px;
+}
+.sb-item:hover{background:var(--pink-pale);color:var(--pink)}
+.sb-item.active{background:var(--pink-bg);color:var(--pink);font-weight:600}
+.sb-item-icon{width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sb-item svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#sidebar.collapsed .sb-logo-txt,
+#sidebar.collapsed .sb-wallet-lbl,
+#sidebar.collapsed .sb-wallet-val,
+#sidebar.collapsed .sb-section-lbl,
+#sidebar.collapsed .sb-item span{display:none}
+#sidebar.collapsed .sb-item{justify-content:center;padding:9px 0}
+#sidebar.collapsed .sb-wallet{padding:14px 0;display:flex;justify-content:center}
+#sidebar.collapsed .sb-logo{justify-content:center;padding:18px 0 14px}
+
+/* ── MAIN ── */
+#main{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh;overflow:hidden}
+
+/* ── TOPBAR (configurações only) ── */
+#topbar{
+  display:none;
+  background:#fff;border-bottom:1px solid var(--border);
+  padding:0 28px;height:52px;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+#topbar.show{display:flex}
+.topbar-breadcrumb{font-size:13px;color:var(--text-2);display:flex;align-items:center;gap:6px}
+.topbar-breadcrumb span{color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-icon-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-2);transition:background .15s}
+.topbar-icon-btn:hover{background:var(--pink-pale);color:var(--pink)}
+.topbar-icon-btn svg{width:15px;height:15px}
+.topbar-user{display:flex;align-items:center;gap:8px;cursor:pointer}
+.topbar-avatar{width:32px;height:32px;border-radius:50%;background:var(--pink);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.topbar-user-info{line-height:1.2}
+.topbar-user-name{font-size:12.5px;font-weight:600;color:var(--text)}
+.topbar-user-doc{font-size:11px;color:var(--text-3)}
+
+/* ── CONTENT ── */
+#content{flex:1;overflow-y:auto;overflow-x:hidden;padding:28px;display:none}
+#content.active{display:block}
+
+/* ── PAGE HEADER ── */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:16px;flex-wrap:wrap}
+.page-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+.page-title em{color:var(--pink);font-style:normal}
+.page-subtitle{font-size:13.5px;color:var(--text-2);margin-top:4px;line-height:1.5}
+.date-picker-btn{
+  display:flex;align-items:center;gap:7px;
+  border:1px solid var(--border);border-radius:10px;
+  padding:8px 14px;background:#fff;cursor:pointer;
+  font-size:12.5px;font-weight:500;color:var(--text);
+  white-space:nowrap;transition:border-color .15s;
+  font-family:var(--font);
+}
+.date-picker-btn:hover{border-color:var(--pink)}
+.date-picker-btn svg{width:14px;height:14px;stroke:var(--pink);fill:none;stroke-width:1.8;stroke-linecap:round}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;gap:14px;margin-bottom:20px}
+.kpi-3{grid-template-columns:repeat(3,1fr)}
+.kpi-4{grid-template-columns:repeat(4,1fr)}
+.kpi-card{
+  background:#fff;border:1px solid var(--border);border-radius:14px;
+  padding:16px 18px;position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+}
+.kpi-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(212,24,108,.07)}
+.kpi-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.kpi-dot-row{display:flex;align-items:center;gap:5px}
+.kpi-dot{width:7px;height:7px;border-radius:50%;background:var(--pink)}
+.kpi-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2)}
+.kpi-icon{width:36px;height:36px;border-radius:10px;background:var(--pink-pale);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kpi-icon svg{width:17px;height:17px;stroke:var(--pink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kpi-value{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:10px}
+.kpi-divider{border:none;border-top:1px solid var(--border-light);margin:10px 0}
+.kpi-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:3px}
+.kpi-row-lbl{color:var(--text-2)}
+.kpi-row-val{font-weight:600;color:var(--text)}
+.kpi-row-val.pink{color:var(--pink)}
+.kpi-cta{
+  margin-top:12px;width:100%;
+  background:var(--pink);color:#fff;border:none;border-radius:8px;
+  padding:9px 14px;font-size:12.5px;font-weight:700;
+  font-family:var(--font);cursor:pointer;transition:background .15s;
+}
+.kpi-cta:hover{background:#B81560}
+.kpi-left-bar{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--pink);border-radius:0 2px 2px 0}
+
+/* ── CHART + INDICES ── */
+.chart-indices-grid{display:grid;grid-template-columns:1fr 260px;gap:14px}
+.chart-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px 22px}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.chart-title{font-size:14px;font-weight:700;color:var(--pink)}
+.chart-legend{display:flex;align-items:center;gap:14px}
+.chart-leg-item{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--text-2);cursor:pointer}
+.chart-leg-icon svg{width:14px;height:14px;stroke:var(--text-3);fill:none;stroke-width:1.8}
+.indices-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px 18px}
+.indices-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px}
+.index-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.index-ring{position:relative;width:44px;height:44px;flex-shrink:0}
+.index-ring canvas{width:44px!important;height:44px!important}
+.index-ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--text-2)}
+.index-info{}
+.index-name{font-size:13px;font-weight:600;color:var(--text)}
+.index-val{font-size:12px;color:var(--text-2);margin-top:1px}
+
+/* ── TABLE ── */
+.table-wrap{background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.table-controls{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border-light);flex-wrap:wrap}
+.search-input-wrap{position:relative;flex:1;min-width:200px}
+.search-input-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--text-3);fill:none;stroke-width:1.8;stroke-linecap:round}
+.search-input{width:100%;border:1px solid var(--border);border-radius:9px;padding:8px 12px 8px 33px;font-size:13px;font-family:var(--font);color:var(--text);background:#fff;outline:none;transition:border-color .15s}
+.search-input::placeholder{color:var(--text-3)}
+.search-input:focus{border-color:var(--pink)}
+.filter-select{border:1px solid var(--border);border-radius:9px;padding:8px 28px 8px 12px;font-size:13px;font-family:var(--font);color:var(--text);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B5C70' stroke-width='2' stroke-linecap='round'%3E%3Cpolyline points='6,9 12,15 18,9'/%3E%3C/svg%3E") no-repeat right 8px center;-webkit-appearance:none;outline:none;cursor:pointer;transition:border-color .15s}
+.filter-select:focus{border-color:var(--pink)}
+.btn-filter{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:9px;padding:8px 14px;background:#fff;font-size:12.5px;font-weight:500;font-family:var(--font);color:var(--text-2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-filter:hover{border-color:var(--pink);color:var(--pink)}
+.btn-filter svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+table{width:100%;border-collapse:collapse}
+thead tr{border-bottom:1px solid var(--border-light)}
+thead th{padding:11px 18px;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3);text-align:left}
+tbody tr{border-bottom:1px solid var(--border-light);transition:background .12s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#FAFAFA}
+tbody td{padding:13px 18px;font-size:13px;color:var(--text)}
+.td-date{font-size:12.5px;font-weight:600;color:var(--text)}
+.td-time{font-size:11px;color:var(--text-3);margin-top:1px}
+.td-payment-val{font-size:13px;font-weight:600;color:var(--text)}
+.td-payment-method{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--text-2);margin-top:3px}
+.pix-diamond{width:12px;height:12px;background:var(--pink);transform:rotate(45deg);border-radius:2px;flex-shrink:0}
+.badge{display:inline-flex;align-items:center;border-radius:6px;padding:3px 9px;font-size:11.5px;font-weight:600}
+.badge-pending{background:var(--warn-bg);color:var(--warn)}
+.badge-approved{background:var(--success-bg);color:var(--success)}
+.badge-active{background:var(--success-bg);color:var(--success)}
+.badge-refund{background:#FEE2E2;color:#DC2626}
+.action-btn{background:none;border:none;cursor:pointer;color:var(--text-3);padding:4px;border-radius:6px;transition:color .15s,background .15s;display:flex;align-items:center;justify-content:center}
+.action-btn:hover{color:var(--pink);background:var(--pink-pale)}
+.action-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+.actions-cell{display:flex;align-items:center;gap:4px}
+.empty-state{padding:48px;text-align:center;font-size:13.5px;color:var(--text-3)}
+
+/* ── TABS ── */
+.tabs{display:flex;align-items:center;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab-btn{padding:10px 16px;font-size:13.5px;font-weight:500;color:var(--text-2);cursor:pointer;border:none;background:none;font-family:var(--font);position:relative;transition:color .15s;white-space:nowrap}
+.tab-btn::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--pink);border-radius:1px 1px 0 0;opacity:0;transition:opacity .15s}
+.tab-btn.active{color:var(--pink);font-weight:600}
+.tab-btn.active::after{opacity:1}
+.tab-btn:hover{color:var(--pink)}
+
+/* ── PRIMARY BUTTON ── */
+.btn-primary{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--pink);color:#fff;border:none;border-radius:10px;
+  padding:9px 18px;font-size:13px;font-weight:700;
+  font-family:var(--font);cursor:pointer;transition:background .15s;
+  white-space:nowrap;
+}
+.btn-primary:hover{background:#B81560}
+.btn-primary svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+
+/* ── TAXAS CARDS ── */
+.taxas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+.taxa-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px 18px;position:relative;overflow:hidden}
+.taxa-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.taxa-card-lbl{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2)}
+.taxa-card-icon{width:34px;height:34px;border-radius:9px;background:var(--pink-pale);display:flex;align-items:center;justify-content:center}
+.taxa-card-icon svg{width:16px;height:16px;stroke:var(--pink);fill:none;stroke-width:1.8;stroke-linecap:round}
+.taxa-card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px}
+.taxa-card-value{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.02em;margin-bottom:4px}
+.taxa-card-sub{font-size:11.5px;color:var(--text-3);margin-bottom:8px}
+.taxa-card-link{font-size:12px;color:var(--pink);font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.taxa-card-link:hover{text-decoration:underline}
+
+/* ── INTEGRACOES ── */
+.integ-controls{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.section-label{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:12px}
+
+/* ── LINK DE PAGAMENTO ── */
+.domain-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:20px}
+.domain-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.domain-header-left{display:flex;align-items:center;gap:12px}
+.domain-header-icon{width:44px;height:44px;border-radius:12px;background:var(--pink-pale);display:flex;align-items:center;justify-content:center}
+.domain-header-icon svg{width:20px;height:20px;stroke:var(--pink);fill:none;stroke-width:1.8;stroke-linecap:round}
+.domain-header-title{font-size:16px;font-weight:700;color:var(--text)}
+.domain-header-sub{font-size:12.5px;color:var(--text-2);margin-top:2px}
+.alert-box{background:var(--pink-bg);border:1px solid var(--pink-light);border-radius:10px;padding:14px 16px;display:flex;gap:10px;margin-bottom:20px}
+.alert-box svg{width:16px;height:16px;stroke:var(--pink);fill:none;stroke-width:1.8;stroke-linecap:round;flex-shrink:0;margin-top:1px}
+.alert-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.alert-text{font-size:12.5px;color:var(--text-2);line-height:1.5}
+.alert-link{color:var(--pink);font-weight:600}
+.form-group{margin-bottom:16px}
+.form-label{font-size:12px;font-weight:500;color:var(--text-2);margin-bottom:6px;display:block}
+.form-input-row{display:flex;gap:10px}
+.form-input{
+  flex:1;border:1px solid var(--border);border-radius:9px;
+  padding:10px 14px;font-size:13.5px;font-family:var(--font);
+  color:var(--text);background:#fff;outline:none;transition:border-color .15s;
+}
+.form-input::placeholder{color:var(--text-3)}
+.form-input:focus{border-color:var(--pink)}
+.form-hint{font-size:11.5px;color:var(--text-3);margin-top:5px}
+
+/* ── CONFIGURAÇÕES ── */
+.settings-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px 26px;margin-bottom:16px}
+.settings-card-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border-light)}
+.settings-card-icon{width:40px;height:40px;border-radius:10px;background:var(--pink-pale);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.settings-card-icon svg{width:18px;height:18px;stroke:var(--pink);fill:none;stroke-width:1.8;stroke-linecap:round}
+.settings-card-title{font-size:14px;font-weight:700;color:var(--text)}
+.settings-card-sub{font-size:12px;color:var(--text-2);margin-top:2px}
+.settings-field{margin-bottom:16px}
+.settings-label{font-size:12px;font-weight:500;color:var(--text-2);margin-bottom:5px;display:block}
+.settings-input{
+  width:100%;border:1px solid var(--border);border-radius:9px;
+  padding:10px 14px;font-size:13.5px;font-family:var(--font);
+  color:var(--text);background:#fff;outline:none;transition:border-color .15s;
+}
+.settings-input:focus{border-color:var(--pink)}
+.page-icon{width:36px;height:36px;border-radius:10px;background:var(--pink-pale);display:inline-flex;align-items:center;justify-content:center;margin-right:12px;flex-shrink:0}
+.page-icon svg{width:17px;height:17px;stroke:var(--pink);fill:none;stroke-width:1.8;stroke-linecap:round}
+
+/* ── CONFIGURAÇÕES TABS ── */
+.config-tabs{display:flex;gap:4px;margin-bottom:24px}
+.config-tab{
+  display:flex;align-items:center;gap:7px;
+  padding:8px 16px;border:1px solid var(--border);border-radius:9px;
+  font-size:13px;font-weight:500;font-family:var(--font);
+  color:var(--text-2);background:#fff;cursor:pointer;transition:all .15s;
+}
+.config-tab:hover{border-color:var(--pink);color:var(--pink)}
+.config-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+.config-tab svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8}
+
+/* ── CARTEIRA TABS ROW ── */
+.tabs-with-cta{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;border-bottom:1px solid var(--border)}
+.tabs-with-cta .tabs{border-bottom:none;margin-bottom:0}
+
+/* ── RESPONSIVENESS ── */
+@media(max-width:900px){
+  .kpi-4,.kpi-3{grid-template-columns:repeat(2,1fr)}
+  .taxas-grid{grid-template-columns:repeat(2,1fr)}
+  .chart-indices-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .kpi-4,.kpi-3{grid-template-columns:1fr}
+  #sidebar{position:fixed;left:-240px;transition:left .3s}
+  #sidebar.mobile-open{left:0}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-inner">
+      <img class="sb-logo-img" src="luckpay-logo.png" alt="LuckPay">
+      <span class="sb-logo-txt">LuckPay</span>
+    </div>
+    <button class="sb-collapse" id="collapseBtn" title="Recolher">&#8249;</button>
+  </div>
+  <div class="sb-wallet">
+    <div class="sb-wallet-lbl">Minha carteira</div>
+    <div class="sb-wallet-val">R$ 0,00</div>
+  </div>
+  <div class="sb-section">
+    <div class="sb-section-lbl">Recursos</div>
+    <div class="sb-item active" onclick="navigate('inicio')">
+      <div class="sb-item-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+      <span>Início</span>
+    </div>
+    <div class="sb-item" onclick="navigate('carteira')">
+      <div class="sb-item-icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 14h.01"/></svg></div>
+      <span>Carteira</span>
+    </div>
+    <div class="sb-item" onclick="navigate('vendas')">
+      <div class="sb-item-icon"><svg viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div>
+      <span>Vendas</span>
+    </div>
+    <div class="sb-item" onclick="navigate('clientes')">
+      <div class="sb-item-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <span>Clientes</span>
+    </div>
+    <div class="sb-item" onclick="navigate('taxas')">
+      <div class="sb-item-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+      <span>Taxas</span>
+    </div>
+    <div class="sb-item" onclick="navigate('integracoes')">
+      <div class="sb-item-icon"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+      <span>Integrações</span>
+    </div>
+    <div class="sb-item" onclick="navigate('linkpagamento')">
+      <div class="sb-item-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+      <span>Link de Pagamento</span>
+    </div>
+    <div class="sb-item" onclick="navigate('configuracoes')">
+      <div class="sb-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+      <span>Configurações</span>
+    </div>
+    <div class="sb-item" onclick="navigate('suaempresa')">
+      <div class="sb-item-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+      <span>Sua Empresa</span>
+    </div>
+    <div class="sb-item" onclick="logout()" style="margin-top:auto;color:#DC2626">
+      <div class="sb-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
+      <span>Sair</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main id="main">
+  <!-- TOPBAR (only for configurações) -->
+  <div id="topbar">
+    <div class="topbar-breadcrumb">
+      Recursos <span style="color:var(--text-3);margin:0 2px">/</span> <span>Configurações</span>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-icon-btn" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+      <button class="topbar-icon-btn" title="Tema">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <div class="topbar-user">
+        <div class="topbar-avatar">CM</div>
+        <div class="topbar-user-info">
+          <div class="topbar-user-name">Caio Marani</div>
+          <div class="topbar-user-doc">147.794.589-00</div>
+        </div>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" style="margin-left:4px"><polyline points="6,9 12,15 18,9"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── INÍCIO ─── -->
+  <div id="page-inicio" class="active" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:28px;display:block">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Bem-vindo, <em>Caio Marani</em></div>
+      </div>
+      <button class="date-picker-btn">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        26/03/2026 - 02/04/2026
+      </button>
+    </div>
+    <div class="kpi-grid kpi-3">
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Minhas Vendas</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
+        </div>
+        <div class="kpi-value">R$ 0,00</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Ticket médio</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        </div>
+        <div class="kpi-value">R$ 0,00</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Taxa de Aprovação</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg></div>
+        </div>
+        <div class="kpi-value">0%</div>
+      </div>
+    </div>
+    <div class="chart-indices-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">Gráfico de receitas</span>
+          <div class="chart-legend">
+            <div class="chart-leg-item"><div class="chart-leg-icon"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><span>Pagos</span></div>
+            <div class="chart-leg-item"><div class="chart-leg-icon"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><span>Pendentes</span></div>
+            <div class="chart-leg-item"><div class="chart-leg-icon"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><span>Estornados</span></div>
+          </div>
+        </div>
+        <canvas id="revenueChart" style="max-height:220px"></canvas>
+      </div>
+      <div class="indices-card">
+        <div class="indices-title">Índices</div>
+        <div class="index-row">
+          <div class="index-ring"><canvas id="ring-cartao"></canvas><div class="index-ring-label">0%</div></div>
+          <div class="index-info"><div class="index-name">Cartão</div><div class="index-val">R$ 0,00</div></div>
+        </div>
+        <div class="index-row">
+          <div class="index-ring"><canvas id="ring-pix"></canvas><div class="index-ring-label">0%</div></div>
+          <div class="index-info"><div class="index-name">PIX</div><div class="index-val">R$ 0,00</div></div>
+        </div>
+        <div class="index-row">
+          <div class="index-ring"><canvas id="ring-boleto"></canvas><div class="index-ring-label">0%</div></div>
+          <div class="index-info"><div class="index-name">Boleto</div><div class="index-val">R$ 0,00</div></div>
+        </div>
+        <div class="index-row">
+          <div class="index-ring"><canvas id="ring-estornos"></canvas><div class="index-ring-label">0%</div></div>
+          <div class="index-info"><div class="index-name">Estornos</div><div class="index-val">R$ 0,00</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── CARTEIRA ─── -->
+  <div id="page-carteira" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:28px;display:none">
+    <div class="page-header">
+      <div class="page-title">Minha Carteira</div>
+      <button class="date-picker-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        26/03/2026 - 02/04/2026
+      </button>
+    </div>
+    <div class="kpi-grid kpi-4" style="margin-bottom:28px">
+      <div class="kpi-card">
+        <div class="kpi-left-bar"></div>
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Saldo PIX</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="11" height="11" rx="2"/><rect x="11" y="2" width="11" height="11" rx="2"/><rect x="2" y="11" width="11" height="11" rx="2"/><rect x="11" y="11" width="11" height="11" rx="2"/></svg></div>
+        </div>
+        <div class="kpi-value">R$ 0,00</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Saldo total disponível</span><span class="kpi-row-val blue">R$ 0,00</span></div>
+        <button class="kpi-cta">Realizar Saque</button>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-left-bar"></div>
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Saldo Cartão</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+        </div>
+        <div class="kpi-value">R$ 0,00</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Saldo total disponível</span><span class="kpi-row-val blue">R$ 0,00</span></div>
+        <button class="kpi-cta">Realizar Saque</button>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-left-bar"></div>
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">A Receber</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        </div>
+        <div class="kpi-value">R$ 0,00</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Disponível para antecipação</span><span class="kpi-row-val blue">R$ 0,00</span></div>
+        <button class="kpi-cta">Antecipar Saque</button>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-left-bar"></div>
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Aguardando</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div>
+        </div>
+        <div class="kpi-value">R$ 0,00</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Valor em reserva</span><span class="kpi-row-val blue">R$ 0,00</span></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0">
+      <div class="tabs" style="border-bottom:none;margin-bottom:0">
+        <button class="tab-btn active">Transferência</button>
+        <button class="tab-btn">Antecipações</button>
+        <button class="tab-btn">Extrato</button>
+      </div>
+      <button class="btn-primary" style="margin-bottom:4px">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        Ver minhas chaves PIX
+      </button>
+    </div>
+    <div style="height:1px;background:var(--border);margin-bottom:20px"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>VALOR</th><th>STATUS</th><th>DESTINATÁRIO</th><th>TAXA</th><th>ENVIADO EM</th>
+        </tr></thead>
+        <tbody><tr><td colspan="5" class="empty-state">Sem dados no período</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── VENDAS ─── -->
+  <div id="page-vendas" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:28px;display:none">
+    <div class="page-header">
+      <div class="page-title">Minhas Vendas</div>
+      <button class="date-picker-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        26/03/2026 - 02/04/2026
+      </button>
+    </div>
+    <div class="kpi-grid kpi-4" style="margin-bottom:22px">
+      <div class="kpi-card">
+        <div class="kpi-left-bar"></div>
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Aprovadas</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg></div>
+        </div>
+        <div class="kpi-value">R$ 0,00</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Total de vendas</span><span class="kpi-row-val blue">0</span></div>
+        <hr class="kpi-divider">
+        <div class="kpi-row"><span class="kpi-row-lbl">Cartão (0)</span><span class="kpi-row-val">R$ 0,00</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">PIX (0)</span><span class="kpi-row-val">R$ 0,00</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Boleto (0)</span><span class="kpi-row-val">R$ 0,00</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-left-bar"></div>
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Abandonadas</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
+        </div>
+        <div class="kpi-value">R$ 0,00</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Total expirado</span><span class="kpi-row-val blue">0</span></div>
+        <hr class="kpi-divider">
+        <div class="kpi-row"><span class="kpi-row-lbl">PIX (0)</span><span class="kpi-row-val">R$ 0,00</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Boleto (0)</span><span class="kpi-row-val">R$ 0,00</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-left-bar"></div>
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Comissão</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        </div>
+        <div class="kpi-value">R$ 0,00</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Conversão média</span><span class="kpi-row-val blue">0.00%</span></div>
+        <hr class="kpi-divider">
+        <div class="kpi-row"><span class="kpi-row-lbl">Cartão</span><span class="kpi-row-val">0.00%</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">PIX</span><span class="kpi-row-val">0.00%</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Boleto</span><span class="kpi-row-val">0.00%</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-left-bar"></div>
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Estornos</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 .49-3.08"/></svg></div>
+        </div>
+        <div class="kpi-value">R$ 0,00</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Por método</span><span class="kpi-row-val blue"></span></div>
+        <hr class="kpi-divider">
+        <div class="kpi-row"><span class="kpi-row-lbl">Cartão</span><span class="kpi-row-val">R$ 0,00</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">PIX</span><span class="kpi-row-val">R$ 0,00</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Boleto</span><span class="kpi-row-val">R$ 0,00</span></div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-controls">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" type="text" placeholder="Buscar pelo Nome do Cliente">
+        </div>
+        <select class="filter-select">
+          <option>Todos</option>
+          <option>Aprovadas</option>
+          <option>Pendentes</option>
+          <option>Estornadas</option>
+        </select>
+        <button class="btn-filter">
+          <svg viewBox="0 0 24 24"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/></svg>
+          Filtros
+        </button>
+      </div>
+      <table>
+        <thead><tr>
+          <th>DATA</th><th>CLIENTE</th><th>PAGAMENTO</th><th>STATUS</th><th>AÇÕES</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="td-date">02/04/2026</div><div class="td-time">00:19</div></td>
+            <td style="font-weight:500">CAIO MARANI</td>
+            <td><div class="td-payment-val">R$ 500,00</div><div class="td-payment-method"><div class="pix-diamond"></div>PIX</div></td>
+            <td><span class="badge badge-pending">Pendente</span></td>
+            <td><button class="action-btn"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
+          </tr>
+          <tr>
+            <td><div class="td-date">01/04/2026</div><div class="td-time">23:57</div></td>
+            <td style="font-weight:500">CAIO MARANI</td>
+            <td><div class="td-payment-val">R$ 100,00</div><div class="td-payment-method"><div class="pix-diamond"></div>PIX</div></td>
+            <td><span class="badge badge-pending">Pendente</span></td>
+            <td><button class="action-btn"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
+          </tr>
+          <tr>
+            <td><div class="td-date">31/03/2026</div><div class="td-time">14:32</div></td>
+            <td style="font-weight:500">MARIA SILVA</td>
+            <td><div class="td-payment-val">R$ 250,00</div><div class="td-payment-method"><div class="pix-diamond"></div>PIX</div></td>
+            <td><span class="badge badge-approved">Aprovada</span></td>
+            <td><button class="action-btn"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── CLIENTES ─── -->
+  <div id="page-clientes" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:28px;display:none">
+    <div class="page-header">
+      <div class="page-title">Clientes</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="search-input-wrap" style="width:260px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" type="text" placeholder="Pesquise">
+        </div>
+        <button class="btn-primary">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Novo Cliente
+        </button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active">Pessoa Física</button>
+      <button class="tab-btn">Pessoa Jurídica</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Nome</th><th>CPF</th><th>E-mail</th><th>Celular</th><th>Cidade</th><th></th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="font-weight:500">CAIO MARANI</td><td>14779458900</td><td>caio.marani@email.com</td><td>11987654321</td><td>Enzo do Sul</td><td><button class="action-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+          <tr><td style="font-weight:500">CAIO MARANI</td><td>14779458900</td><td>caio.marani@email.com</td><td>11987654321</td><td>Antonella do Norte</td><td><button class="action-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+          <tr><td style="font-weight:500">CAIO MARANI</td><td>14779458900</td><td>caio.marani@email.com</td><td>11987654321</td><td>Pedro do Sul</td><td><button class="action-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+          <tr><td style="font-weight:500">CAIO MARANI</td><td>14779458900</td><td>caio.marani@email.com</td><td>11987654321</td><td>Barros do Sul</td><td><button class="action-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+          <tr><td style="font-weight:500">CAIO MARANI</td><td>14779458900</td><td>caio.marani@email.com</td><td>11987654321</td><td>João do Sul</td><td><button class="action-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+          <tr><td style="font-weight:500">CAIO MARANI</td><td>14779458900</td><td>caio.marani@email.com</td><td>11987654321</td><td>Carvalho do Sul</td><td><button class="action-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── TAXAS ─── -->
+  <div id="page-taxas" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:28px;display:none">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Taxas de Pagamento</div>
+        <div class="page-subtitle">Faça uma simulação em tempo real de transações para obter todas as suas taxas de forma clara.</div>
+      </div>
+    </div>
+    <div class="tabs"><button class="tab-btn active">Taxas</button></div>
+    <div class="taxas-grid">
+      <div class="taxa-card">
+        <div class="taxa-card-top">
+          <div>
+            <div class="taxa-card-lbl">PIX</div>
+            <div class="taxa-card-title">Taxa PIX</div>
+          </div>
+          <div class="taxa-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="11" height="11" rx="2"/><rect x="11" y="2" width="11" height="11" rx="2"/><rect x="2" y="11" width="11" height="11" rx="2"/><rect x="11" y="11" width="11" height="11" rx="2"/></svg></div>
+        </div>
+        <div class="taxa-card-value">R$ 1,50<span style="font-size:14px;font-weight:500;color:var(--text-2)"> + 4.50%</span></div>
+        <div class="taxa-card-sub">Por transação aprovada</div>
+      </div>
+      <div class="taxa-card">
+        <div class="taxa-card-top">
+          <div>
+            <div class="taxa-card-lbl">CARTÃO DE CRÉDITO</div>
+            <div class="taxa-card-title">Taxa Cartão</div>
+          </div>
+          <div class="taxa-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+        </div>
+        <div class="taxa-card-value">R$ 3,49<span style="font-size:14px;font-weight:500;color:var(--text-2)"> + 5.99%</span></div>
+        <div class="taxa-card-sub">Por transação aprovada</div>
+        <a class="taxa-card-link">Ver taxas por parcela →</a>
+      </div>
+      <div class="taxa-card">
+        <div class="taxa-card-top">
+          <div>
+            <div class="taxa-card-lbl">BOLETO</div>
+            <div class="taxa-card-title">Tarifa Boleto</div>
+          </div>
+          <div class="taxa-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
+        </div>
+        <div class="taxa-card-value">R$ 3,50</div>
+        <div class="taxa-card-sub">Por boleto compensado</div>
+      </div>
+      <div class="taxa-card">
+        <div class="taxa-card-top">
+          <div>
+            <div class="taxa-card-lbl">SAQUE</div>
+            <div class="taxa-card-title">Tarifa Saque</div>
+          </div>
+          <div class="taxa-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        </div>
+        <div class="taxa-card-value">Reserva 25%</div>
+        <div class="taxa-card-sub">Reserva sobre vendas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── INTEGRAÇÕES ─── -->
+  <div id="page-integracoes" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:28px;display:none">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Integrações</div>
+        <div class="page-subtitle">Gerencie as integrações do sistema de maneira prática e eficiente.</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active">Webhook</button>
+      <button class="tab-btn">Chave de API</button>
+      <button class="tab-btn">Aplicativos</button>
+    </div>
+    <div class="integ-controls">
+      <div class="search-input-wrap" style="max-width:340px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" type="text" placeholder="Buscar webhook...">
+      </div>
+      <button class="btn-primary">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Cadastrar Novo
+      </button>
+    </div>
+    <div class="section-label">Todos os webhooks</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>URL</th><th>STATUS</th><th>EVENTO</th><th>CRIADO EM</th><th>AÇÕES</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td style="font-size:12.5px;color:var(--text-2)">https://brasil-cacau.vercel.app/</td>
+            <td><span class="badge badge-active">Ativo</span></td>
+            <td style="font-size:12.5px">Atualização de transações</td>
+            <td><div class="td-date" style="font-size:12.5px">01/04/2026</div><div class="td-time">09:45</div></td>
+            <td>
+              <div class="actions-cell">
+                <button class="action-btn" title="Copiar"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                <button class="action-btn" title="Editar"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="action-btn" title="Excluir" style="color:#DC2626"><svg viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── LINK DE PAGAMENTO ─── -->
+  <div id="page-linkpagamento" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:28px;display:none">
+    <div class="domain-card">
+      <div class="domain-header">
+        <div class="domain-header-left">
+          <div class="domain-header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <div>
+            <div class="domain-header-title">Domínio de Checkout</div>
+            <div class="domain-header-sub">Configure seu domínio customizado</div>
+          </div>
+        </div>
+        <button style="background:none;border:none;cursor:pointer;color:var(--text-3);font-size:18px">&#8963;</button>
+      </div>
+      <div class="alert-box">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div>
+          <div class="alert-title">Configure um domínio customizado</div>
+          <div class="alert-text">Configure um subdomínio customizado para seus links de pagamento terem uma URL profissional.<br><span class="alert-link">Exemplo: checkout.meudominio.com</span></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Domínio Completo</label>
+        <div class="form-input-row">
+          <input class="form-input" type="text" placeholder="subdominio.meudominio.com">
+          <button class="btn-primary" style="font-size:14px;padding:10px 22px">Configurar</button>
+        </div>
+        <div class="form-hint">Após configurar, você receberá instruções para configurar o DNS</div>
+      </div>
+    </div>
+    <div class="kpi-grid kpi-4">
+      <div class="kpi-card">
+        <div class="kpi-left-bar"></div>
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Links Totais</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+        </div>
+        <div class="kpi-value">0</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">0 ativos</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-left-bar"></div>
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Receita Total</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        </div>
+        <div class="kpi-value">R$ 0,00</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Ticket médio: R$ 0,00</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-left-bar"></div>
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Tráfego</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/><polyline points="17,6 23,6 23,12"/></svg></div>
+        </div>
+        <div class="kpi-value">0</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">0 visitantes únicos</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-left-bar"></div>
+        <div class="kpi-card-top">
+          <div class="kpi-dot-row"><div class="kpi-dot"></div><span class="kpi-label">Taxa de Conversão</span></div>
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/><polyline points="17,6 23,6 23,12"/></svg></div>
+        </div>
+        <div class="kpi-value">0.0%</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Taxa de conversão geral</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── CONFIGURAÇÕES ─── -->
+  <div id="page-configuracoes" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:28px;display:none">
+    <div style="display:flex;align-items:center;margin-bottom:24px">
+      <div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+      <div>
+        <div class="page-title" style="margin-bottom:4px">Configurações</div>
+        <div class="page-subtitle">Gerencie suas informações pessoais, dados da empresa e configurações de segurança.</div>
+      </div>
+    </div>
+    <div class="config-tabs">
+      <button class="config-tab active" onclick="switchConfigTab(this,'empresa')">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Empresa
+      </button>
+      <button class="config-tab" onclick="switchConfigTab(this,'pessoal')">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Pessoal
+      </button>
+      <button class="config-tab" onclick="switchConfigTab(this,'seguranca')">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Segurança
+      </button>
+    </div>
+    <div id="config-empresa">
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <div class="settings-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <div>
+            <div class="settings-card-title">Dados da Empresa</div>
+            <div class="settings-card-sub">Informações cadastrais da sua empresa</div>
+          </div>
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">Razão Social</label>
+          <input class="settings-input" type="text" value="caio marani">
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">CNPJ</label>
+          <input class="settings-input" type="text" value="147.794.589-00">
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">Nome na fatura</label>
+          <input class="settings-input" type="text" value="Primepag">
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">E-mail comercial</label>
+          <input class="settings-input" type="email" value="caio@primepag.com.br">
+        </div>
+        <div style="margin-top:20px">
+          <button class="btn-primary">Salvar alterações</button>
+        </div>
+      </div>
+    </div>
+    <div id="config-pessoal" style="display:none">
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <div class="settings-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div>
+            <div class="settings-card-title">Dados Pessoais</div>
+            <div class="settings-card-sub">Suas informações de perfil</div>
+          </div>
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">Nome completo</label>
+          <input class="settings-input" type="text" value="Caio Marani">
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">CPF</label>
+          <input class="settings-input" type="text" value="147.794.589-00">
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">E-mail</label>
+          <input class="settings-input" type="email" value="caio.marani@email.com">
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">Celular</label>
+          <input class="settings-input" type="tel" value="(11) 98765-4321">
+        </div>
+        <div style="margin-top:20px">
+          <button class="btn-primary">Salvar alterações</button>
+        </div>
+      </div>
+    </div>
+    <div id="config-seguranca" style="display:none">
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <div class="settings-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div>
+            <div class="settings-card-title">Segurança</div>
+            <div class="settings-card-sub">Configurações de acesso e senha</div>
+          </div>
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">Senha atual</label>
+          <input class="settings-input" type="password" placeholder="••••••••">
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">Nova senha</label>
+          <input class="settings-input" type="password" placeholder="••••••••">
+        </div>
+        <div class="settings-field">
+          <label class="settings-label">Confirmar nova senha</label>
+          <input class="settings-input" type="password" placeholder="••••••••">
+        </div>
+        <div style="margin-top:20px">
+          <button class="btn-primary">Atualizar senha</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SUA EMPRESA ─── -->
+  <div id="page-suaempresa" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:28px;display:none">
+    <div class="page-title" style="margin-bottom:20px">Sua Empresa</div>
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <div class="settings-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+        <div>
+          <div class="settings-card-title">Informações da Empresa</div>
+          <div class="settings-card-sub">Dados cadastrais e configurações</div>
+        </div>
+      </div>
+      <div class="settings-field">
+        <label class="settings-label">Razão Social</label>
+        <input class="settings-input" type="text" value="caio marani">
+      </div>
+      <div class="settings-field">
+        <label class="settings-label">CNPJ</label>
+        <input class="settings-input" type="text" value="147.794.589-00">
+      </div>
+      <div style="margin-top:20px">
+        <button class="btn-primary">Salvar</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+  // Simulação de navegação simples
+  function navigate(pageId) {
+    document.querySelectorAll('#main > div').forEach(div => div.style.display = 'none');
+    document.querySelectorAll('#main > div').forEach(div => div.classList.remove('active'));
+    
+    const target = document.getElementById('page-' + pageId);
+    if (target) {
+      target.style.display = 'block';
+      target.classList.add('active');
+    }
+    
+    // Links no sidebar
+    document.querySelectorAll('.sb-item').forEach(item => item.classList.remove('active'));
+    // Note: event.currentTarget might be undefined if called programmatically, but here it's from onclick
+    if (window.event && window.event.currentTarget) {
+        window.event.currentTarget.classList.add('active');
+    }
+
+    // Breadcrumb e Topbar
+    const topbar = document.getElementById('topbar');
+    if (['configuracoes', 'vendas', 'carteira', 'taxas', 'integracoes', 'linkpagamento', 'suaempresa'].includes(pageId)) {
+        topbar.style.display = 'flex';
+        const breadcrumb = topbar.querySelector('.topbar-breadcrumb span:last-child');
+        if (breadcrumb) {
+            breadcrumb.textContent = pageId.charAt(0).toUpperCase() + pageId.slice(1);
+        }
+    } else {
+        topbar.style.display = 'none';
+    }
+  }
+
+  // Sair do dashboard
+  function logout() {
+    window.location.href = 'index.html';
+  }
+
+
+// ── SIDEBAR COLLAPSE ──
+document.getElementById('collapseBtn').addEventListener('click', function() {
+  const sb = document.getElementById('sidebar');
+  sb.classList.toggle('collapsed');
+  this.innerHTML = sb.classList.contains('collapsed') ? '&#8250;' : '&#8249;';
+});
+
+// ── CONFIG TABS ──
+function switchConfigTab(btn, name) {
+  document.querySelectorAll('.config-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('[id^="config-"]').forEach(t => t.style.display = 'none');
+  document.getElementById('config-' + name).style.display = 'block';
+}
+
+// ── INLINE TAB SWITCHING (Carteira, Clientes, Integrações) ──
+document.querySelectorAll('.tabs').forEach(tabGroup => {
+  tabGroup.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      tabGroup.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+});
+
+// ── REVENUE CHART ──
+(function() {
+  const ctx = document.getElementById('revenueChart');
+  if (!ctx) return;
+  const labels = ['26/03','27/03','28/03','29/03','30/03','31/03','01/04','02/04'];
+  const data = [0, 200, 700, 1100, 1350, 900, 400, 80];
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Pagos',
+        data,
+        borderColor: '#F5A000',
+        backgroundColor: 'rgba(245,160,0,0.15)',
+        fill: true,
+        tension: 0.45,
+        pointRadius: 0,
+        borderWidth: 2.5,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: ctx => 'R$ ' + ctx.parsed.y.toFixed(2) }
+      }},
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11, family: 'Inter' }, color: '#9B8AA0' } },
+        y: {
+          grid: { color: 'rgba(0,0,0,0.04)', drawBorder: false },
+          ticks: {
+            font: { size: 11, family: 'Inter' }, color: '#9B8AA0',
+            callback: v => v >= 1000 ? (v/1000).toFixed(2) + 'k' : v
+          }
+        }
+      }
+    }
+  });
+})();
+
+// ── DONUT RINGS ──
+function makeRing(id, pct, color) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [pct, 100 - pct],
+        backgroundColor: [color || '#E8E0EB', '#F0E8F0'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      cutout: '70%',
+      responsive: false,
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      animation: false
+    }
+  });
+}
+makeRing('ring-cartao', 0, '#2E7D32');
+makeRing('ring-pix', 0, '#2E7D32');
+makeRing('ring-boleto', 0, '#2E7D32');
+makeRing('ring-estornos', 0, '#2E7D32');
+</script>
+</body>
+</html>
